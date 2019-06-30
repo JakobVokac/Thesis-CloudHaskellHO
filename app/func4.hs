@@ -45,7 +45,7 @@ data PR = SendInt Int PR |
 instance Binary PR
 
 --Simplified triplets, only sending and receiving right now.
-triple :: PR -> Channel -> Process () 
+triple :: PR -> Channel -> Process ()
 triple (SendInt x st) (sp, rp) = do
   sendChan sp x
   say $ "Sent value: " ++ show x
@@ -77,7 +77,7 @@ remotable['triple, 'establishChannel]
 
 main :: IO ()
 main = do
-  Right transport <- createTransport "127.0.0.1" "8085"  (\port' -> ("127.0.0.1" , port')) defaultTCPParameters
+  Right transport <- createTransport "127.0.0.1" "8185"  (\port' -> ("127.0.0.1" , port')) defaultTCPParameters
   node <- newLocalNode transport rtable
 
   --The idea is that the channels are created and the variables are saved
