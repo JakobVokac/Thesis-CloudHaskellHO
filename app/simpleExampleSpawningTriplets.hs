@@ -49,12 +49,12 @@ import Network.Transport.TCP (createTransport, defaultTCPParameters)
 -- C 
 -- ... m3<n3>.n3(z).
 
---Environment for variables
 
---spawnChannelLocal :: Serializable a => (ReceivePort a -> Process ()) -> Process (SendPort a)
-
---Session type structure (quite messy at the moment, but I wanted to
---focus primarily on getting the example to work)
+--Session type structure. There are two structures, for the remote and
+--for the local part. The local part only has receive ports and the remote
+--part only has send ports such that the data structure is serializable.
+--Whenever the remote part needs to receive something, it should set up
+--a new channel and send back the sendport.
 data LocalProc = LSendInt Int (ReceivePort (SendPort Int)) LocalProc |
             LRecvInt (ReceivePort Int) LocalProc |
             LEnd
@@ -66,6 +66,8 @@ data RemoteProc = RSendInt Int (SendPort Int) RemoteProc |
 instance Binary RemoteProc
 
 --Simplified triplets, only sending and receiving right now.
+
+--Triplets for the local process
 tripleLocal :: LocalProc -> Process ()
 tripleLocal (LSendInt x rsp proc) = do
   sp <- receiveChan rsp
@@ -83,6 +85,7 @@ tripleLocal (LRecvInt rp proc) = do
 tripleLocal (LEnd) = do
   say $ "End"
 
+--Triplets for the remote process
 tripleRemote :: RemoteProc -> Process ()
 tripleRemote (RSendInt x sp proc) = do
   sendChan sp x
@@ -101,10 +104,7 @@ tripleRemote (RRecvInt ssp proc) = do
 tripleRemote (REnd) = do
   say $ "End"
 
---Initial function for the remote process. Here we establish a receive port
---for the remote process.
---
---The receive port doesn't work yet.
+--Here we establish a receive port for the remote process.
 establishChannel :: SendPort (SendPort Int) -> Process (ReceivePort Int)
 establishChannel spInit = do
   (spNew, rp) <- newChan :: Process (SendPort Int, ReceivePort Int)
@@ -121,10 +121,9 @@ main = do
   node <- newLocalNode transport rtable
   node2 <- newLocalNode transport2 rtable
 
-  --The idea is that the channels are created and the variables are saved
-  --in the environment, so they can be used passed from triplet to triplet,
-  --like they would in HO. This current example doesn't work yet because
-  --of the closure part.
+  --The idea is that we have two nodes, one with a remote process and one
+  --with a local process. The remote process is turned into a closure and
+  --the local process doesn't have to be.
   runProcess node $ do
     (s1,r1) <- newChan :: Process (SendPort (SendPort Int), ReceivePort (SendPort Int))
     (s2,r2) <- newChan :: Process (SendPort (SendPort Int), ReceivePort (SendPort Int))

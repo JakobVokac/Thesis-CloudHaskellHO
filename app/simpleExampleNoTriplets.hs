@@ -58,7 +58,7 @@ data Proc = SendInt Int Proc |
   deriving (Typeable, Generic)
 instance Binary Proc
 
---Simplified triplets, only sending and receiving right now.
+--Simplified triplets with no spawning, only sending and receiving right now.
 triple :: Proc -> Channel -> Process ()
 triple (SendInt x proc) (sp, rp) = do
   sendChan sp x
