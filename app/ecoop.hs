@@ -68,7 +68,6 @@ eqServerB3 r4 y3 s5 = do
    sendChan y3 $ a == b 
    sendChan s5 ()
 
-    
 -- breakdown of eqClient:
 eqClientB1 r6 y1 s7 = do
    _ <- receiveChan r6
