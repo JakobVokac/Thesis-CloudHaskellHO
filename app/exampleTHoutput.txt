@@ -1,0 +1,53 @@
+simpleExampleNoTriplets.hs:88:1-37: Splicing declarations
+    remotable ['triple, 'establishChannel]
+  ======>
+    triple__static :: Static (Proc -> Channel -> Process ())
+    triple__static
+      = Control.Distributed.Static.staticLabel "Main.triple"
+    triple__sdict :: Static (SerializableDict Proc)
+    triple__sdict
+      = Control.Distributed.Static.staticLabel "Main.triple__sdict"
+    establishChannel__static ::
+      Static ((SendPort (SendPort Int), SendPort Int, Proc)
+              -> Process ())
+    establishChannel__static
+      = Control.Distributed.Static.staticLabel "Main.establishChannel"
+    establishChannel__sdict ::
+      Static (SerializableDict (SendPort (SendPort Int),
+                                SendPort Int,
+                                Proc))
+    establishChannel__sdict
+      = Control.Distributed.Static.staticLabel
+          "Main.establishChannel__sdict"
+    establishChannel__tdict :: Static (SerializableDict ())
+    establishChannel__tdict
+      = Control.Distributed.Static.staticLabel
+          "Main.establishChannel__tdict"
+    __remoteTable :: RemoteTable -> RemoteTable
+    __remoteTable
+      = ((Control.Distributed.Static.registerStatic
+            "Main.triple" (Data.Rank1Dynamic.toDynamic triple))
+         . ((Control.Distributed.Static.registerStatic
+               "Main.triple__sdict"
+               (Data.Rank1Dynamic.toDynamic
+                  (SerializableDict :: SerializableDict Proc)))
+            . ((Control.Distributed.Static.registerStatic
+                  "Main.establishChannel"
+                  (Data.Rank1Dynamic.toDynamic establishChannel))
+               . ((Control.Distributed.Static.registerStatic
+                     "Main.establishChannel__sdict"
+                     (Data.Rank1Dynamic.toDynamic
+                        (SerializableDict ::
+                           SerializableDict (SendPort (SendPort Int), SendPort Int, Proc))))
+                  . (Control.Distributed.Static.registerStatic
+                       "Main.establishChannel__tdict"
+                       (Data.Rank1Dynamic.toDynamic
+                          (SerializableDict :: SerializableDict ())))))))
+simpleExampleNoTriplets.hs:106:23-49: Splicing expression
+    mkClosure 'establishChannel
+  ======>
+    ((closure
+        (establishChannel__static
+         `Control.Distributed.Static.staticCompose`
+           (staticDecode establishChannel__sdict)))
+     . encode)

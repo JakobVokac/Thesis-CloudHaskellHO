@@ -2,7 +2,6 @@
 import System.Environment (getArgs)
 import Control.Distributed.Process
 import Control.Distributed.Process.Closure
-import Control.Distributed.Process.Backend.SimpleLocalnet
 import Control.Distributed.Process.Node (initRemoteTable)
 
 isPrime :: Integer -> Process Bool
