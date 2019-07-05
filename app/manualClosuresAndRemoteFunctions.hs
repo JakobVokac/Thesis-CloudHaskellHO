@@ -13,8 +13,8 @@ import Network.Transport.TCP (createTransport, defaultTCPParameters)
 -- !IMPORTANT!: always use the initRemoteTable from the Node package,
 -- not the Static package, otherwise the remotable[] declarations won't
 -- work and no error will be given.
--- Also, never use the function terminate!! Gives exceptions without
--- explanations and crashes the program.
+-- Also, never use the function terminate!! Used for stopping the program
+-- completely, not for exiting a process.
 
 
 
