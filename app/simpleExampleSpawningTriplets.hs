@@ -12,6 +12,9 @@ import Network.Transport.TCP (createTransport, defaultTCPParameters)
 
 
 
+-- UPDATE, IMPORTANT: do not use terminate in any process instance, it causes
+-- the program to fail. Program now works.
+
 
 -- Attempt at a remote process, where each triplet gets spawned by the previous
 -- and each triplet has its own channel.
@@ -22,7 +25,6 @@ import Network.Transport.TCP (createTransport, defaultTCPParameters)
 --
 -- This method fails for unknown reasons. You get an unknown exception (with a bugged out message)
 -- and after the first established channel from the remote triplet, the process fails.
-
 
 
 
@@ -74,13 +76,17 @@ tripleLocal (LSendInt x rsp proc) = do
   sendChan sp x
   say $ "Sent value: " ++ show x
   _ <- spawnLocal $ do tripleLocal proc 
-  terminate
+  say $ "ended process" 
+
+  --terminate
 
 tripleLocal (LRecvInt rp proc) = do
   x <- receiveChan rp
   say $ "Received value: " ++ show x
   _ <- spawnLocal $ do tripleLocal proc
-  terminate
+  say $ "ended process" 
+
+  --terminate
 
 tripleLocal (LEnd) = do
   say $ "End"
@@ -91,15 +97,18 @@ tripleRemote (RSendInt x sp proc) = do
   sendChan sp x
   say $ "Sent value: " ++ show x
   _ <- spawnLocal $ do tripleRemote proc 
-  terminate
+  say $ "ended process" 
+
+  --terminate
 
 tripleRemote (RRecvInt ssp proc) = do
   rp <- establishChannel ssp
   say $ "Established channel"
   x <- receiveChan rp
   say $ "Received x: " ++ show x
-  _ <- spawnLocal $ do tripleRemote proc 
-  terminate
+  _ <- spawnLocal $ do tripleRemote proc
+  say $ "ended process" 
+  --terminate
 
 tripleRemote (REnd) = do
   say $ "End"
