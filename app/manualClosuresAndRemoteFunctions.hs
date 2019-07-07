@@ -76,7 +76,6 @@ sdictBS = SerializableDict
 
 
 
-
 ------------------------------------------------------------------------
 
 -- Automatic closure to make sure these work with the same RemoteTable,
@@ -144,7 +143,6 @@ remotable['sendnt, 'sdictT, 'sdictBS]
 main :: IO ()
 main = do
   Right transport <- createTransport "127.0.0.1" "8097"  (\port' -> ("127.0.0.1" , port')) defaultTCPParameters
-
   node <- newLocalNode transport rtable
 
   runProcess node $ do
